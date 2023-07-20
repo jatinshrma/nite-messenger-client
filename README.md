@@ -1,1 +1,0 @@
-# nite-messenger-client
