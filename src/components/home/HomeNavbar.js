@@ -1,11 +1,10 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import { CLIENT } from "../../constants"
 
 const Navbar = () => {
 	const logout = () => {
 		localStorage.clear()
-		window.location.href = `${CLIENT}/`
+		window.location.href = window.location.origin
 	}
 
 	return (
