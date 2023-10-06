@@ -16,7 +16,7 @@ const ChatItem = props => {
 	const time = localTime.split(lastIndexes)
 
 	return (
-		<div>
+		<div key={chat?._id}>
 			{date && <div className="text-center date-elements">{date}</div>}
 			<div className={`${chatClass}Div d-flex`}>
 				<span
@@ -27,7 +27,7 @@ const ChatItem = props => {
 					aria-expanded="true"
 				>
 					{msg}
-					<div className={`text-${align}`} id="chatTime">
+					<div id="chatTime">
 						{time} {postTimeVAr}
 					</div>
 				</span>

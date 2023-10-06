@@ -1,6 +1,6 @@
 // Impotring Modules
 import React, { createRef, useState, useEffect, useContext } from "react"
-import Picker from "emoji-picker-react"
+// import Picker from "emoji-picker-react"
 
 // Imporing Files
 import mssgContext from "../context/message/mssgContext"
@@ -10,7 +10,7 @@ import userContext from "../context/authenticate/userContext"
 import "./Messenger.css"
 import ChatItem from "./ChatItem"
 import ChatNav from "./ChatNav"
-import Smile from "../assets/smile.svg"
+// import Smile from "../assets/smile.svg"
 import socketContext from "../context/socket/socketContext"
 import { useParams } from "react-router-dom"
 
@@ -34,8 +34,7 @@ const Messenger = props => {
 	const inputRef = createRef()
 
 	// States
-	const [showPicker, setShowPicker] = useState(false)
-	const [cursorLocation, setCursorLocation] = useState()
+	// const [showPicker, setShowPicker] = useState(false)
 
 	// Scroll to the bottom
 	if (window.pageYOffset === 0) {
@@ -46,9 +45,10 @@ const Messenger = props => {
 	const [activeStatus, setActiveStatus] = useState(false)
 	const [activeUsers, setActiveUsers] = useState([])
 	const [isTyping, setIsTyping] = useState(false)
+	const [typedMessage, setTypedMessage] = useState("")
 
 	const { socket } = useContext(socketContext)
-
+	console.log({ chat })
 	useEffect(() => {
 		socket.current.on("getUsers", users => {
 			setActiveUsers(users)
@@ -118,49 +118,58 @@ const Messenger = props => {
 	}, [chat])
 
 	// Handles Inserting an emoji.
-	const onEmojiClick = (event, emojiObject) => {
-		const ref = inputRef.current
-		ref.focus()
-		const start = inputRef.current.value.substring(0, ref.selectionStart)
-		const end = inputRef.current.value.substring(ref.selectionStart)
-		const text = start + emojiObject.emoji + end
-		inputRef.current.value = text
-		setCursorLocation(start.length + 2)
-	}
+	// const onEmojiClick = (event, emojiObject) => {
+	// 	const ref = inputRef.current
+	// 	ref.focus()
+	// 	const start = inputRef.current.value.substring(0, ref.selectionStart)
+	// 	const end = inputRef.current.value.substring(ref.selectionStart)
+	// 	const text = start + emojiObject.emoji + end
+	// 	inputRef.current.value = text
+	// 	setCursorLocation(start.length + 2)
+	// }
 
-	// Set cursor position after inserting an emoji
-	useEffect(() => {
-		if (inputRef.current) inputRef.current.selectionEnd = cursorLocation
-		// eslint-disable-next-line
-	}, [cursorLocation])
-
-	// Handle onChange input and height of Text-Area
 	const onchange = e => {
-		inputRef.current.rows = e.target.value.split("\n").length
-		window.scrollTo(0, window.pageYOffset)
+		e.target.style.height = "inherit"
+		const computed = window.getComputedStyle(e.target)
+		const height =
+			parseInt(computed.getPropertyValue("border-top-width"), 10) +
+			parseInt(computed.getPropertyValue("padding-top"), 10) +
+			e.target.scrollHeight +
+			parseInt(computed.getPropertyValue("padding-bottom"), 10) +
+			parseInt(computed.getPropertyValue("border-bottom-width"), 10)
+		e.target.style.height = `${height}px`
 
-		inputRef.current.value.length !== 0
-			? socket.current.emit("typing", true, friend)
-			: socket.current.emit("typing", false, friend)
+		setTypedMessage(e.target.value)
+		if (e.target.value.length === 0) socket.current.emit("typing", false, friend)
+		else if (e.target.value.length === 1) socket.current.emit("typing", true, friend)
 	}
 
 	// Send Message into database and re-fetch updated messages.
 	const sendMsgHandler = async e => {
 		e.preventDefault()
-		const typedMessage = inputRef.current.value
-		let status = "sent"
+		inputRef.current.style.height = "inherit"
+		const _typedMessage = typedMessage
 
+		let status = "sent"
 		if (activeUsers?.find(i => i.userId === friend)) {
 			status = "seen"
 		}
 
-		if (typedMessage) {
+		if (_typedMessage) {
+			setTypedMessage("")
 			socket.current.emit("typing", false, friend)
-			const sentMessage = await sendMessage(typedMessage, friend, status)
-			socket.current.emit("sendMessage", sentMessage, friend)
-			getMessages(friend, user)
-			inputRef.current.value = ""
-			inputRef.current.rows = 1
+
+			const message_json = {
+				date: new Date().toISOString(),
+				message: _typedMessage,
+				receiver: friend,
+				sender: user,
+				status
+			}
+
+			setChat(state => state.concat([message_json]))
+			socket.current.emit("sendMessage", message_json, friend)
+			sendMessage(_typedMessage, friend, status)
 			window.scrollTo(0, window.document.body.scrollHeight)
 		}
 	}
@@ -195,7 +204,6 @@ const Messenger = props => {
 							chat={element}
 							date={!validation && newDate}
 							chatClass={chatClass}
-							key={element._id}
 							msg={element.message}
 							messageStatus={messageStatus}
 							showStatus={showStatus}
@@ -209,11 +217,11 @@ const Messenger = props => {
 						<span className="dot dot-3"></span>
 					</div>
 				)}
-				{showPicker && (
+				{/* {showPicker && (
 					<div id="emojiContainer">
 						<Picker onEmojiClick={onEmojiClick} />
 					</div>
-				)}
+				)} */}
 			</div>
 			{isBlockedByFriend ? (
 				<div id="blockMessage">
@@ -226,14 +234,21 @@ const Messenger = props => {
 			) : (
 				<form className="bottomDiv" onSubmit={sendMsgHandler}>
 					<div className="bottomInnerDiv">
-						<button type="button" id="emojiBtn" onClick={() => setShowPicker(val => !val)}>
+						{/* <button type="button" id="emojiBtn" onClick={() => setShowPicker(val => !val)}>
 							<img src={Smile} alt="Emoji" />
+						</button> */}
+						<textarea
+							id="txtInput"
+							rows="1"
+							ref={inputRef}
+							value={typedMessage}
+							onChange={onchange}
+							placeholder="Message"
+						/>
+						<button type="submit" id="sendBtn" disabled={typedMessage?.length === 0}>
+							Send
 						</button>
-						<textarea rows="1" ref={inputRef} id="txtInput" onChange={onchange} placeholder="Message" />
 					</div>
-					<button type="submit" id="sendBtn">
-						Send
-					</button>
 				</form>
 			)}
 		</>

@@ -62,7 +62,7 @@
 #chatTime {
 	margin: -8px 0;
 	margin-top: -4px;
-	text-align: end;
+	text-align: right;
 	font-size: medium;
 	color: #b1b1b1;
 }
@@ -80,7 +80,7 @@
 
 /* --------------------- emoji --------------------- */
 
-#emojiBtn {
+/* #emojiBtn {
 	background: black;
 	padding: 0 12px;
 	border: none;
@@ -91,8 +91,8 @@
 #emojiBtn > img {
 	width: 25px;
 	margin: auto;
-}
-
+} */
+/* 
 #emojiContainer {
 	width: fit-content;
 	position: fixed;
@@ -122,7 +122,7 @@ aside.emoji-picker-react {
 
 .emoji-picker-react .emoji-categories {
 	background: #456cff;
-}
+} */
 
 /* --------------------- Bottom Area --------------------- */
 
@@ -135,11 +135,14 @@ aside.emoji-picker-react {
 }
 
 .bottomInnerDiv {
-	display: flex;
 	width: 100vw;
-	margin: 5px 5px;
-	border-radius: 25px;
-	background: none;
+	margin: 8px 6px;
+	border-radius: 26px;
+	background: #000;
+	display: flex;
+	align-items: flex-end;
+	flex-direction: row;
+	padding: 4px 5px;
 	overflow: hidden;
 }
 
@@ -149,9 +152,9 @@ aside.emoji-picker-react {
 	color: white;
 	width: 100%;
 	max-height: 200px;
+	margin: auto 10px;
 	border: none;
 	outline: none;
-	padding: 12px 0;
 	overflow: hidden;
 	resize: none;
 }
@@ -161,7 +164,6 @@ aside.emoji-picker-react {
 	background: #2d52dc;
 	border: none;
 	outline: none;
-	margin: auto 5px 10px 0;
 	padding: 5px 12px;
 	border-radius: 40px;
 }
@@ -233,35 +235,31 @@ aside.emoji-picker-react {
 
 @media screen and (max-width: 480px) {
 	#chatContainer {
-		margin-bottom: 57px;
+		margin-bottom: 67px;
 	}
 
-	.recTxt {
-		overflow-wrap: anywhere;
-		max-width: 80%;
-		font-size: 14px;
-		padding: 5px 10px 11px 10px;
-	}
-
+	.recTxt,
 	.sentTxt {
 		overflow-wrap: anywhere;
-		max-width: 80%;
-		font-size: 14px;
-		padding: 5px 10px 11px 10px;
+		max-width: 85%;
+		font-size: 17px;
+		padding: 8px 10px;
+		border-radius: 12px;
 	}
 
 	span,
 	div {
-		font-size: small;
+		font-size: 1rem;
 	}
 
 	#chatTime {
-		font-size: 12px;
+		margin-top: 2px;
+		font-size: 14px;
 	}
 
 	#sendBtn {
-		font-size: small;
-		padding: 8px 12px;
+		font-size: 1rem;
+		padding: 8px 20px;
 	}
 
 	.nav-dpContainer {
